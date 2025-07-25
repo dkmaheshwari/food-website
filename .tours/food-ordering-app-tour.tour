@@ -1,0 +1,11 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "Food Ordering App Tour",
+  "steps": [
+    {
+      "file": "swiggy-clone-master/src/index.js",
+      "description": "This is the first part here we render our App",
+      "line": 6
+    }
+  ]
+}
