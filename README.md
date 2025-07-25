@@ -34,6 +34,4 @@ This is a Learning based project on React.js. This react app is built using the 
 - Custom Hook
 - Shimmer UI
 
-### 🚀 Live Demo <a name="live-demo"></a>
 
-- Live Website Preview : <a href="https://swiggy-clone-seven-red.vercel.app/" target="_blank">CHEF-2-DOOR (Swiggy Clone)</a>
