@@ -119,4 +119,4 @@ To get a local copy up and running, follow these simple steps.
 
 ### ✨ Live Demo <a name="live-demo"></a>
 
-A live demo of the application will be available soon.
+Check out the live demo here: [https://dkmaheshwari.github.io/food-website/](https://dkmaheshwari.github.io/food-website/)
