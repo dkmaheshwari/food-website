@@ -1,5 +1,5 @@
 {
-  "name": "swiggy-clone",
+  "name": "foodie",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -11,7 +11,10 @@
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
     "lodash": "^4.17.21",
+    "mongoose": "^8.17.0",
     "node-fetch": "^3.3.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -21,11 +24,14 @@
     "react-scripts": "5.0.1",
     "web-vitals": "^2.1.4"
   },
+  "homepage": "https://dkmaheshwari.github.io/food-website",
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "react-scripts --max-old-space-size=4096 build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": [
@@ -46,11 +52,20 @@
     ]
   },
   "devDependencies": {
+    "gh-pages": "^6.3.0",
+    "nodemon": "^3.1.10",
     "tailwindcss": "^3.4.3"
   },
   "description": "This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).",
   "main": "tailwind.config.js",
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dkmaheshwari/food-website.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dkmaheshwari/food-website/issues"
+  }
 }

@@ -1,184 +1,165 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import { useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { addItems } from "../Utils/cartSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch, faStar } from "@fortawesome/free-solid-svg-icons";
-import useRestaurantMenu from "../Hooks/useRestaurantMenu";
-import { useParams, Link } from "react-router-dom";
-import {
-  DELIVERY_DISTANCE_IMG,
-  MENU_OFFERS_CDN_URL,
-} from "../helpers/Constant";
-import OfferSlider from "./OfferSlider";
-import OfferCard from "./OfferCard";
-import MenuCategory from "./MenuCategory";
-// import MenuSearch from "./MenuSearch";
-import { useSelector } from "react-redux";
-import MyContext from "../Utils/MyContext";
-import ResetCart from "./ResetCart";
-import RestaurantMenuShimmering from "./RestaurantMenuShimmering";
+import { faStar, faPlus } from "@fortawesome/free-solid-svg-icons";
 
 const RestaurantMenu = () => {
   const { id } = useParams();
-  const [resDetails, resOffers, resMenu] = useRestaurantMenu(id);
-  const [activeLink, setActiveLink] = useState(null);
-  const resDetailsData = {
-    id: resDetails?.id,
-    name: resDetails?.name,
-    areaName: resDetails?.areaName,
-    cloudinaryImageId: resDetails?.cloudinaryImageId,
-    slaString: resDetails?.sla?.slaString,
-    lastMileTravelString: resDetails?.sla?.lastMileTravelString,
-    deliveryFee: resDetails?.feeDetails?.totalFee,
-  };
+  const [restaurant, setRestaurant] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
+  const cartItems = useSelector((store) => store.cart.cartItems);
 
-  const locDetails = useSelector((store) => store.location.locationDetails);
-  const city = locDetails?.[0]?.district || "";
-  const [showElement, setShowElement] = useState(false);
-  const [resCartAlert, setResCartAlert] = useState(false);
-
-  const contextValue = {
-    resCartAlert,
-    showResCartAlert: () => {
-      setResCartAlert(true);
-      setShowElement(false);
-    },
-    hideResCartAlert: () => {
-      setResCartAlert(false);
-      setShowElement(true);
-    },
-  };
+  const fetchRestaurantData = useCallback(async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/restaurants/${id}`
+      );
+      const data = await response.json();
+      setRestaurant(data);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching restaurant:", error);
+      setLoading(false);
+    }
+  }, [id]);
 
   useEffect(() => {
-    window.scrollTo({
-      top: 0,
-      left: 0,
-      behavior: "smooth",
-    });
+    fetchRestaurantData();
+  }, [fetchRestaurantData]);
 
-    const timeoutId = setTimeout(() => {
-      setShowElement(true);
-    }, 2000);
+  const handleAddItem = (item) => {
+    const cartItem = {
+      id: item._id || Math.random().toString(),
+      name: item.name,
+      price: item.price,
+      description: item.description,
+      isVeg: item.isVeg,
+      imageUrl: item.imageUrl,
+      restaurantName: restaurant.name,
+      restaurantId: restaurant._id,
+    };
+    dispatch(addItems(cartItem));
+  };
 
-    return () => clearTimeout(timeoutId);
-  }, []);
+  const getItemCount = (itemId) => {
+    const item = cartItems.find((cartItem) => cartItem.id === itemId);
+    return item ? item.quantity : 0;
+  };
 
-  return resOffers.length === 0 ? (
-    <>
-      <RestaurantMenuShimmering />
-    </>
-  ) : (
-    <MyContext.Provider value={contextValue}>
-      <div className="flex justify-center pt-28 w-screen">
-        <div className="container w-[50%]">
-          <h4 className="text-xs text-left text-[#93959f]">
-            Home/{city}/{resDetails?.name}
-          </h4>
-          <div className="mx-3">
-            <h1 className="font-[700] pt-8 text-2xl">{resDetails?.name}</h1>
-            <div className="mt-6 bg-gradient-to-b from-white to-[#dcdce3] p-4 rounded-3xl">
-              <div className="flex flex-col mx-auto p-4 rounded-3xl bg-white">
-                <div className="flex items-center font-semibold">
-                  <FontAwesomeIcon
-                    icon={faStar}
-                    className="bg-green-700 text-xs text-white p-1 rounded-full"
-                  />
-                  <h2 className="ml-2 text-lg">
-                    {resDetails?.avgRatingString} (
-                    {resDetails?.totalRatingsString}) • ₹
-                    {resDetails?.costForTwo / 100} for two
-                  </h2>
-                </div>
-                <div className="mt-2 text-[#f26618] font-[600]">
-                  {resDetails?.cuisines?.join(", ")}
-                </div>
-                <div className="flex gap-3 items-center mt-2">
-                  <div className="flex flex-col justify-center items-center">
-                    <div className="h-2 w-2 bg-[#c4c4c4] rounded-full"></div>
-                    <div className="h-[1.5rem]  bg-[#c4c4c4] w-[0.1rem]"></div>
-                    <div className="h-2 w-2 bg-[#c4c4c4] rounded-full"></div>
-                  </div>
-                  <div>
-                    <div className="flex gap-2">
-                      <p className="font-semibold"> Outlet</p>
-                      <p className="text-[#777a7d]">{resDetails?.areaName}</p>
-                    </div>
-                    <div>
-                      <p className="font-semibold">
-                        {resDetails?.sla?.minDeliveryTime}-
-                        {resDetails?.sla?.maxDeliveryTime} mins
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <hr className="border-t-1 border-gray-400 my-3" />
-                <div className="flex items-center gap-1.5">
-                  <img
-                    src={DELIVERY_DISTANCE_IMG}
-                    alt="DISTANCE"
-                    className="w-5"
-                  />
-                  <p
-                    className="font-[500] text-[#848484]"
-                    dangerouslySetInnerHTML={{
-                      __html: String(resDetails?.feeDetails?.message),
-                    }}
-                  ></p>
-                </div>
-              </div>
-            </div>
-          </div>
-          {resOffers && (
-            <>
-              <hr className="my-8"></hr>
-              <div className="flex justify-between items-center px-4">
-                <h2 className="font-bold text-2xl leading-3 tracking-tight">
-                  Deals For You
-                </h2>
-                <OfferSlider
-                  className="offerSlider"
-                  key="offerSlider"
-                  amount={450}
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-orange-500"></div>
+      </div>
+    );
+  }
+
+  if (!restaurant) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <p className="text-xl text-gray-600">Restaurant not found</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="pt-24 pb-8">
+      {/* Restaurant Header */}
+      <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white py-8">
+        <div className="container mx-auto px-4 max-w-4xl">
+          <div className="flex items-center space-x-6">
+            <img
+              src={restaurant.imageUrl}
+              alt={restaurant.name}
+              className="w-32 h-32 rounded-lg object-cover shadow-lg"
+            />
+            <div>
+              <h1 className="text-3xl font-bold mb-2">{restaurant.name}</h1>
+              <p className="text-lg mb-2">{restaurant.cuisine.join(", ")}</p>
+              <div className="flex items-center space-x-2">
+                <FontAwesomeIcon
+                  icon={faStar}
+                  className="bg-green-600 text-white p-1 rounded-full text-sm"
                 />
+                <span className="font-semibold">{restaurant.rating}</span>
+                <span>•</span>
+                <span>30-35 mins</span>
               </div>
-              <div className="offerSlider container-snap p-4 gap-x-8 flex mt-4 mb-2 overflow-x-auto">
-                {resOffers.map((offer, index) => (
-                  <OfferCard
-                    key={index} // It's better to use a unique key for each item in the array
-                    offerLogo={offer.offerLogo}
-                    header={offer.header}
-                    couponCode={offer.couponCode}
-                  />
-                ))}
-              </div>
-            </>
-          )}
-          <p className="py-4 text-center leading-loose">M E N U</p>
-          {/* <div>
-          <Link to={`/menusearch/${id}`}>
-            <div className="flex items-center justify-center bg-[#f0f0f5] text-[#616469] py-2 rounded-xl px-4 relative">
-              <h3 className="text-lg font-bold">Search for dishes</h3>
-              <FontAwesomeIcon icon={faSearch} className="absolute right-4" />
             </div>
-          </Link>
-        </div> */}
-          <div>
-            {resMenu && (
-              <>
-                <div>
-                  {resMenu?.map((category) => (
-                    <MenuCategory
-                      {...category}
-                      key={category.title}
-                      resDetailsData={resDetailsData}
-                    />
-                  ))}
-                </div>
-              </>
-            )}
           </div>
         </div>
-        {resCartAlert ? <ResetCart /> : null}
       </div>
-    </MyContext.Provider>
+
+      {/* Menu Section */}
+      <div className="container mx-auto px-4 max-w-4xl mt-8">
+        <h2 className="text-2xl font-bold mb-6">Menu</h2>
+
+        {restaurant.menu && restaurant.menu.length > 0 ? (
+          <div className="space-y-4">
+            {restaurant.menu.map((item, index) => (
+              <div
+                key={item._id || index}
+                className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow"
+              >
+                <div className="flex justify-between items-start">
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-2 mb-2">
+                      <div
+                        className={`w-4 h-4 border-2 ${
+                          item.isVeg
+                            ? "border-green-500 bg-green-100"
+                            : "border-red-500 bg-red-100"
+                        } rounded flex items-center justify-center`}
+                      >
+                        <div
+                          className={`w-2 h-2 rounded-full ${
+                            item.isVeg ? "bg-green-500" : "bg-red-500"
+                          }`}
+                        ></div>
+                      </div>
+                      <h3 className="text-lg font-semibold">{item.name}</h3>
+                    </div>
+                    <p className="text-gray-600 mb-2">{item.description}</p>
+                    <p className="text-lg font-bold text-orange-600">
+                      ₹{item.price}
+                    </p>
+                  </div>
+
+                  <div className="ml-4 flex flex-col items-end">
+                    {item.imageUrl && (
+                      <img
+                        src={item.imageUrl}
+                        alt={item.name}
+                        className="w-24 h-24 rounded-lg object-cover mb-3"
+                      />
+                    )}
+                    <button
+                      onClick={() => handleAddItem(item)}
+                      className="bg-orange-500 text-white px-6 py-2 rounded-full hover:bg-orange-600 transition-colors flex items-center space-x-2"
+                    >
+                      <FontAwesomeIcon icon={faPlus} className="text-sm" />
+                      <span>Add</span>
+                      {getItemCount(item._id || index) > 0 && (
+                        <span className="bg-white text-orange-500 px-2 py-1 rounded-full text-sm font-bold">
+                          {getItemCount(item._id || index)}
+                        </span>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <p className="text-gray-500 text-lg">Menu coming soon...</p>
+          </div>
+        )}
+      </div>
+    </div>
   );
 };
 

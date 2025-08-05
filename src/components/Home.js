@@ -1,432 +1,181 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import useRestaurantData from "../Hooks/useRestaurantData";
-import { useSelector } from "react-redux";
-import { APP_IMG_CDN_URL, WOYM_CARD_IMG_CDN_URL } from "../helpers/Constant";
-import Slider from "./Slider";
 import RestaurantCard from "./RestaurantCard";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFilter, faXmark } from "@fortawesome/free-solid-svg-icons";
-import orderBy from "lodash/orderBy";
-import { RiArrowDownSLine, RiArrowUpSLine } from "react-icons/ri";
-import { RiArrowDropUpLine } from "react-icons/ri";
-import Footer from "./Footer";
-import Unserviceable from "./Unserviceable";
 import HomeShimmer from "./HomeShimmer";
+import Footer from "./Footer";
+import { useSelector } from "react-redux";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSearch, faFilter } from "@fortawesome/free-solid-svg-icons";
 
 const Home = () => {
-  const [
-    // topicalBanner,
-    WOYM,
-    topResList,
-    sort,
-    resList,
-    filteredResList,
-    setfilteredResList,
-    appInstallLinks,
-    footerCities,
-    bestPlaces,
-    bestCuiNearMe,
-    expResNearMe,
-    notServicable,
-  ] = useRestaurantData();
-
+  const [resList, filteredResList, setFilteredResList] = useRestaurantData();
+  const [searchText, setSearchText] = useState("");
+  const [filterType, setFilterType] = useState("");
   const locDetails = useSelector((store) => store.location.locationDetails);
   const locationSearchVisibility = useSelector(
     (store) => store.locSearch.visible
   );
-  console.log(resList);
-  const [city, setCity] = useState(locDetails[0]?.district);
-  const [sortActive, setSortActive] = useState(undefined);
-  const [bestPlacesOpen, setBestPlacesOpen] = useState(false);
-  const [bestCuiOpen, setBestCuiOpen] = useState(false);
+  const city = locDetails[0]?.district || "your city";
 
-  // useEffect to update city and sorting buttons when locDetails change
-  useEffect(() => {
-    if (locDetails && locDetails[0]) {
-      setCity(locDetails[0].district);
-      setSortActive(undefined);
+  const handleSearch = () => {
+    if (!searchText.trim()) {
+      setFilteredResList(resList);
+      return;
     }
-  }, [locDetails]);
 
-  const handleSortClick = (text) => {
-    if (text === sortActive && sortActive !== undefined) {
-      setSortActive(undefined);
-      setfilteredResList(resList);
+    const filtered = resList.filter((res) => {
+      const searchLower = searchText.toLowerCase();
+      return (
+        res.name.toLowerCase().includes(searchLower) ||
+        res.cuisine.some((cuisine) =>
+          cuisine.toLowerCase().includes(searchLower)
+        )
+      );
+    });
+    setFilteredResList(filtered);
+  };
+
+  const handleFilter = (type) => {
+    setFilterType(type);
+    let filtered = resList;
+
+    // Apply search filter first if there's search text
+    if (searchText.trim()) {
+      const searchLower = searchText.toLowerCase();
+      filtered = resList.filter((res) => {
+        return (
+          res.name.toLowerCase().includes(searchLower) ||
+          res.cuisine.some((cuisine) =>
+            cuisine.toLowerCase().includes(searchLower)
+          )
+        );
+      });
+    }
+
+    if (type === "rating") {
+      const sorted = [...filtered].sort((a, b) => b.rating - a.rating);
+      setFilteredResList(sorted);
+    } else if (type === "name") {
+      const sorted = [...filtered].sort((a, b) => a.name.localeCompare(b.name));
+      setFilteredResList(sorted);
     } else {
-      setSortActive(text);
-      if (text === "Relevance (Default)") {
-        setfilteredResList(filteredResList);
-      } else if (text === "DeliveryTime") {
-        const sortedList = orderBy(
-          filteredResList,
-          ["info.sla.deliveryTime"],
-          ["asc"]
-        );
-        setfilteredResList(sortedList);
-      } else if (text === "Rating") {
-        const sortedList = orderBy(
-          filteredResList,
-          ["info.avgRating"],
-          ["desc"]
-        );
-        setfilteredResList(sortedList);
-      } else if (text === "Cost:LowtoHigh") {
-        const sortedList = orderBy(
-          filteredResList,
-          [(res) => parseInt(res.info.costForTwo.split(" ")[0].slice(1))],
-          ["asc"]
-        );
-        setfilteredResList(sortedList);
-      } else if (text === "Cost:HightoLow") {
-        const sortedList = orderBy(
-          filteredResList,
-          [(res) => parseInt(res.info.costForTwo.split(" ")[0].slice(1))],
-          ["desc"]
-        );
-        setfilteredResList(sortedList);
-      }
+      setFilteredResList(filtered);
     }
   };
 
-  const handleMorePlaces = () => {
-    setBestPlacesOpen(true);
-  };
-
-  const handleLessPlaces = () => {
-    setBestPlacesOpen(false);
-  };
-  const handleMoreCui = () => {
-    setBestCuiOpen(true);
-  };
-
-  const handleLessCui = () => {
-    setBestCuiOpen(false);
+  const handleReset = () => {
+    setSearchText("");
+    setFilterType("");
+    setFilteredResList(resList);
   };
 
   return resList?.length === 0 ? (
-    <h1>
-      <HomeShimmer />
-    </h1>
+    <HomeShimmer />
   ) : (
     <>
-      {notServicable !== undefined ? (
-        <div>
-          <Unserviceable />
-        </div>
-      ) : (
-        <div className="body xl:max-w-[80%] mx-auto min-h-screen pt-40 ">
-          {WOYM && (
-            <>
-              <div className="flex justify-between mx-12 px-4">
-                <h1 className="font-bold text-[1.7rem] leading-3 tracking-tight">
-                  What's on your mind?
-                </h1>
-                <Slider className="foodCategory" amount={350} />
-              </div>
-              <div className="foodCategory container-snap mx-12 flex p-4 overflow-x-auto">
-                {WOYM.map((img) => {
-                  return (
-                    <div
-                      className="cursor-pointer flex-shrink-0 pr-6 first:pl-4"
-                      key={img.id}
-                    >
-                      {/* this will take you to the swiggy website's food app */}
-                      {/* <a href={img.action.link}> */}
-                      <img
-                        className="h-[180px] w-[144px]"
-                        src={WOYM_CARD_IMG_CDN_URL + img.imageId}
-                        alt="what's on your mind restaurant"
-                      />
-                      {/* </a> */}
-                    </div>
-                  );
-                })}
-              </div>
-            </>
-          )}
+      <div className="body xl:max-w-[80%] mx-auto min-h-screen pt-40">
+        <div className="mx-8">
+          {/* Hero Section */}
+          <div className="text-center mb-12">
+            <h1 className="font-bold text-4xl mb-4 bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
+              Discover Delicious Food
+            </h1>
+            <p className="text-gray-600 text-lg mb-8">
+              Order from the best restaurants in {city}
+            </p>
 
-          {topResList && (
-            <>
-              <hr className="my-8"></hr>
-              <div className="flex justify-between items-center mx-12 px-4">
-                <h1 className="font-bold text-[1.7rem] leading-3 tracking-tight">
-                  Top restaurant chains in {city}
-                </h1>
-                <Slider className="topResList" key="topResList" amount={450} />
-              </div>
-              <div className="topResList container-snap mx-12 p-4 gap-x-8 flex mt-4 mb-2 overflow-x-auto">
-                {topResList.map((res) => {
-                  return (
-                    <RestaurantCard
-                      {...res.info}
-                      locationSearchVisibility={locationSearchVisibility}
-                      key={res.info.id}
-                    />
-                  );
-                })}
-              </div>
-            </>
-          )}
-          <hr className="my-8"></hr>
-          {filteredResList && (
-            <>
-              <div className="mx-8">
-                <div className="my-8 mb-4">
-                  <h1 className="font-bold text-[1.7rem] my-12 mx-8 leading-3 tracking-tight">
-                    Restaurants with online food delivery in {city}
-                  </h1>
-                </div>
-                <div className="container-snap flex items-center mx-16 mb-4 w-full overflow-auto">
-                  <div
-                    className={`px-3 py-2 mr-3 min-w-fit rounded-full transition-all duration-100 ease-in delay-0 ${
-                      sortActive !== undefined
-                        ? "bg-[#02060c26] border-[orange] border-[1px]"
-                        : "border-[1px] border-solid border-[#02060c1f]"
-                    }`}
-                  >
-                    <h1
-                      className={`text-center flex-1 text-base tracking-tight font-medium whitespace-nowrap ${
-                        sortActive !== undefined
-                          ? "text-orange-500"
-                          : "text-[#050e1bbf]"
-                      }`}
-                    >
-                      Filter &nbsp; <FontAwesomeIcon icon={faFilter} />
-                    </h1>
-                  </div>
-                  {sort.map((x, index) => {
-                    const formatTitle = (title) => {
-                      // Insert a space before each uppercase letter that follows a lowercase letter or a digit
-                      let formattedTitle = title.replace(
-                        /([a-z0-9])([A-Z])/g,
-                        "$1 $2"
-                      );
-
-                      // Ensure space around the colon
-                      formattedTitle = formattedTitle.replace(/:\s*/g, " : ");
-
-                      // Handle specific known cases if necessary
-                      if (formattedTitle.includes("Lowto High")) {
-                        formattedTitle = formattedTitle.replace(
-                          "Lowto High",
-                          "Low to High"
-                        );
-                      }
-                      if (formattedTitle.includes("Highto Low")) {
-                        formattedTitle = formattedTitle.replace(
-                          "Highto Low",
-                          "High to Low"
-                        );
-                      }
-
-                      return formattedTitle;
-                    };
-
-                    return (
-                      <div
-                        key={x.title}
-                        onClick={() => handleSortClick(x.title)}
-                        className={`container-snap flex justify-between items-center min-w-fit truncate px-3 cursor-pointer rounded-full mr-2 mb-2 ${
-                          sortActive === x.title
-                            ? "bg-orange-200 border-[orange] border-[1px]"
-                            : "border-[1px] border-solid border-[#02060c1f]"
-                        } `}
-                      >
-                        <h1 className="text-center text-base text-[#050e1bbf] tracking-tight font-medium">
-                          {formatTitle(x.title)}
-                        </h1>
-                        {sortActive === x.title ? (
-                          <div>
-                            <FontAwesomeIcon
-                              icon={faXmark}
-                              className="text-[#050e1bbf] text-center text-sm"
-                            />
-                          </div>
-                        ) : null}
-                      </div>
-                    );
-                  })}
-                </div>
-                <div className="grid place-items-center gap-8 mx-auto px-8 my-8 xl:grid-cols-4 lg:grid-cols-3">
-                  {filteredResList.map((res) => {
-                    return (
-                      <RestaurantCard
-                        {...res.info}
-                        locationSearchVisibility={locationSearchVisibility}
-                        key={res.info.id}
-                      />
-                    );
-                  })}
-                </div>
-              </div>
-            </>
-          )}
-
-          {bestPlaces && (
-            <>
-              <hr className="my-8"></hr>
-              <div className="flex justify-between mx-12 px-4">
-                <h1 className="font-bold text-[1.7rem] leading-3 tracking-tight">
-                  Best Places to Eat Across Cities
-                </h1>
-              </div>
-              <div className="flex flex-wrap gap-x-2 justify-between my-8">
-                {bestPlaces.slice(0, 11).map((x) => (
-                  <div
-                    className="w-[20%] flex-grow p-4 mx-2 mb-4 cursor-pointer border-[1px] border-solid border-[#02060c1f] rounded-xl transition-all ease-in delay-100 hover:bg-orange-100"
-                    key={x.text}
-                  >
-                    <h2 className="truncate text-center text-base text-[#050e1bbf] tracking-tight font-medium">
-                      {x.text}
-                    </h2>
-                  </div>
-                ))}
-                {!bestPlacesOpen && (
-                  <div
-                    onClick={handleMorePlaces}
-                    className="flex items-center justify-center w-[20%] flex-grow p-4 mx-2 mb-4 cursor-pointer border-[1px] border-solid border-[#02060c1f] rounded-xl transition-all ease-in delay-100 hover:bg-orange-500"
-                  >
-                    <RiArrowDownSLine className="w-6 h-6 mr-2" />
-                    <h2 className="truncate text-center text-base text-[#050e1bbf] tracking-tight font-medium">
-                      Show more
-                    </h2>
-                  </div>
-                )}
-                {bestPlacesOpen && (
-                  <>
-                    {bestPlaces.slice(11).map((x) => (
-                      <div
-                        className="w-[20%] flex-grow p-4 mx-2 mb-4 cursor-pointer border-[1px] border-solid border-[#02060c1f] rounded-xl transition-all ease-in delay-100 hover:bg-orange-100"
-                        key={x.text}
-                      >
-                        <h2 className="truncate text-center text-base text-[#050e1bbf] tracking-tight font-medium">
-                          {x.text}
-                        </h2>
-                      </div>
-                    ))}
-                    <div
-                      onClick={handleLessPlaces}
-                      className="flex items-center justify-center w-[20%] p-4 mx-2 mb-4 cursor-pointer border-[1px] border-solid border-[#02060c1f] rounded-xl transition-all ease-in delay-100 hover:bg-orange-500"
-                    >
-                      <RiArrowUpSLine className="w-6 h-6 mr-2" />
-                      <h2 className="truncate text-center text-base text-[#050e1bbf] tracking-tight font-medium">
-                        Show less
-                      </h2>
-                    </div>
-                  </>
-                )}
-              </div>
-            </>
-          )}
-
-          {bestCuiNearMe && (
-            <>
-              <hr className="my-8"></hr>
-              <div className="flex justify-between mx-12 px-4">
-                <h1 className="font-bold text-[1.7rem] leading-3 tracking-tight">
-                  Best Cuisines Near Me
-                </h1>
-              </div>
-              <div className="flex flex-wrap gap-x-2 justify-between my-8">
-                {bestCuiNearMe.slice(0, 11).map((x) => (
-                  <div
-                    className="w-[20%] flex-grow p-4 mx-2 mb-4 cursor-pointer border-[1px] border-solid border-[#02060c1f] rounded-xl transition-all ease-in delay-100 hover:bg-orange-100"
-                    key={x.text}
-                  >
-                    <h2 className="truncate text-center text-base text-[#050e1bbf] tracking-tight font-medium">
-                      {x.text}
-                    </h2>
-                  </div>
-                ))}
-                {!bestCuiOpen && (
-                  <div
-                    onClick={handleMoreCui}
-                    className="flex items-center justify-center w-[20%] flex-grow p-4 mx-2 mb-4 cursor-pointer border-[1px] border-solid border-[#02060c1f] rounded-xl transition-all ease-in delay-100 hover:bg-orange-500"
-                  >
-                    <RiArrowDownSLine className="w-6 h-6 mr-2" />
-                    <h2 className="truncate text-center text-base text-[#050e1bbf] tracking-tight font-medium">
-                      Show more
-                    </h2>
-                  </div>
-                )}
-                {bestCuiOpen && (
-                  <>
-                    {bestCuiNearMe.slice(11).map((x) => (
-                      <div
-                        className="w-[20%] flex-grow p-4 mx-2 mb-4 cursor-pointer border-[1px] border-solid border-[#02060c1f] rounded-xl transition-all ease-in delay-100 hover:bg-orange-100"
-                        key={x.text}
-                      >
-                        <h2 className="truncate text-center text-base text-[#050e1bbf] tracking-tight font-medium">
-                          {x.text}
-                        </h2>
-                      </div>
-                    ))}
-                    <div
-                      onClick={handleLessCui}
-                      className="flex items-center justify-center w-[20%] p-4 mx-2 mb-4 cursor-pointer border-[1px] border-solid border-[#02060c1f] rounded-xl transition-all ease-in delay-100 hover:bg-orange-500"
-                    >
-                      <RiArrowDropUpLine className="w-6 h-6 mr-2" />
-                      <h2 className="truncate text-center text-base text-[#050e1bbf] tracking-tight font-medium">
-                        Show less
-                      </h2>
-                    </div>
-                  </>
-                )}
-              </div>
-            </>
-          )}
-          {expResNearMe && (
-            <>
-              <hr className="my-8"></hr>
-              <div className="flex justify-between mx-12 px-4">
-                <h1 className="font-bold text-[1.7rem] leading-3 tracking-tight">
-                  Explore Every Restaurants Near Me
-                </h1>
-              </div>
-              <div>
-                <div className="flex items-center flex-wrap">
-                  {expResNearMe.map((x) => {
-                    return (
-                      <div
-                        className="w-[20%] p-4 mx-auto my-12 cursor-pointer border-[1px] border-solid border-[#02060c1f] rounded-xl transition-all ease-in delay-100 hover:bg-orange-100"
-                        key={x.text}
-                      >
-                        <h2 className="truncate text-center text-base text-[#050e1bbf] tracking-tight font-medium">
-                          {x.text}
-                        </h2>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            </>
-          )}
-        </div>
-      )}
-
-      <div className="">
-        {appInstallLinks && (
-          <>
-            <div className="flex justify-center items-center bg-[#f0f0f5] h-32 w-[100%] mx-auto">
-              <h2 className="text-[#3d4047] text-3xl font-bold w-[28rem] text-wrap">
-                For better experience, download the app now
-              </h2>
-
-              <div className="flex gap-8">
-                <img
-                  className="w-[12.5rem]"
-                  src={APP_IMG_CDN_URL + appInstallLinks.androidAppImage}
+            {/* Search Bar */}
+            <div className="flex justify-center mb-6">
+              <div className="relative w-full max-w-2xl">
+                <input
+                  type="text"
+                  className="w-full border border-gray-300 p-4 pl-12 rounded-full shadow-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  placeholder="Search for restaurants, cuisines..."
+                  value={searchText}
+                  onChange={(e) => setSearchText(e.target.value)}
+                  onKeyPress={(e) => e.key === "Enter" && handleSearch()}
                 />
-                <img
-                  className="w-[12.5rem]"
-                  src={APP_IMG_CDN_URL + appInstallLinks.iosAppImage}
+                <FontAwesomeIcon
+                  icon={faSearch}
+                  className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"
                 />
+                <button
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-orange-500 text-white px-6 py-2 rounded-full hover:bg-orange-600 transition-colors"
+                  onClick={handleSearch}
+                >
+                  Search
+                </button>
               </div>
             </div>
-          </>
-        )}
-        <Footer footerCities={footerCities} />
+
+            {/* Filter Buttons */}
+            <div className="flex justify-center gap-4 mb-8">
+              <button
+                onClick={() => handleFilter("")}
+                className={`px-6 py-2 rounded-full transition-all ${
+                  filterType === ""
+                    ? "bg-orange-500 text-white"
+                    : "border border-gray-300 text-gray-700 hover:bg-gray-50"
+                }`}
+              >
+                <FontAwesomeIcon icon={faFilter} className="mr-2" />
+                All
+              </button>
+              <button
+                onClick={() => handleFilter("rating")}
+                className={`px-6 py-2 rounded-full transition-all ${
+                  filterType === "rating"
+                    ? "bg-orange-500 text-white"
+                    : "border border-gray-300 text-gray-700 hover:bg-gray-50"
+                }`}
+              >
+                Top Rated
+              </button>
+              <button
+                onClick={() => handleFilter("name")}
+                className={`px-6 py-2 rounded-full transition-all ${
+                  filterType === "name"
+                    ? "bg-orange-500 text-white"
+                    : "border border-gray-300 text-gray-700 hover:bg-gray-50"
+                }`}
+              >
+                A-Z
+              </button>
+              {(searchText || filterType) && (
+                <button
+                  onClick={handleReset}
+                  className="px-6 py-2 rounded-full bg-gray-500 text-white hover:bg-gray-600 transition-all"
+                >
+                  Reset
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Restaurant Grid */}
+          <div className="mb-12">
+            <h2 className="font-bold text-2xl mb-6 text-center">
+              {filteredResList.length} restaurants found
+            </h2>
+            <div className="grid place-items-center gap-8 mx-auto px-4 xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1">
+              {filteredResList.map((res) => (
+                <RestaurantCard
+                  name={res.name}
+                  cloudinaryImageId={res.imageUrl}
+                  avgRating={res.rating}
+                  cuisines={res.cuisine}
+                  locationSearchVisibility={locationSearchVisibility}
+                  key={res._id}
+                  id={res._id}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
+
+      {/* Footer */}
+      <Footer footerCities={[]} />
     </>
   );
 };

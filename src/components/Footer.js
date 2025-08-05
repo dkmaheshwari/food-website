@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import footer_logo from "../assets/logo.jpeg";
 import { footer_content } from "../helpers/Constant";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { FaRegCopyright } from "react-icons/fa";
@@ -8,7 +7,6 @@ import {
   faLinkedin,
   faGithub,
   faDiscord,
-  faInstagram,
 } from "@fortawesome/free-brands-svg-icons";
 
 const Footer = ({ footerCities }) => {
@@ -23,24 +21,10 @@ const Footer = ({ footerCities }) => {
 
   return (
     <>
-      <div className="flex bg-[#110705] text-[#ffffff99] flex-col items-center justify-center p-10">
-        <div className="grid grid-cols-4 gap-x-[5%] w-[85%] mx-auto">
-          <div>
-            <div className="flex items-center" key="footer-details">
-              <img
-                className="w-40 filter grayscale"
-                src={footer_logo}
-                alt="Footer Logo"
-                style={{
-                  backgroundColor: "[#110705]",
-                  filter: "brightness(1) invert(1) hue-rotate(360deg)",
-                }}
-              />
-            </div>
-            <h1 className="truncate">© 2024 Bundl Technologies Pvt. Ltd</h1>
-          </div>
-          {footer_content.map((x, index) => (
-            <div key={index} className={`${index === 2 ? "col-start-3 " : ""}`}>
+      <div className="flex bg-gray-800 text-gray-300 flex-col items-center justify-center p-10">
+        <div className="grid grid-cols-3 gap-x-[5%] w-[85%] mx-auto">
+          {footer_content.slice(1).map((x, index) => (
+            <div key={index} className={`${index === 1 ? "col-start-2 " : ""}`}>
               <h1 className="font-BasisGrotesquePro font-bold text-base leading-10 tracking-tighter text-white">
                 {x.title}
               </h1>
@@ -51,7 +35,7 @@ const Footer = ({ footerCities }) => {
               ))}
             </div>
           ))}
-          <div className="col-start-4 row-start-1">
+          <div className="col-start-3 row-start-1">
             <h1 className="font-BasisGrotesquePro font-bold text-base leading-10 tracking-tighter text-white">
               We deliver to :
             </h1>
@@ -61,7 +45,7 @@ const Footer = ({ footerCities }) => {
               </div>
             ))}
             <div
-              className="flex justify-between mt-2 align-center items-center cursor-pointer border-[#ffffff70] border-solid border-[1px] w-fit px-2 rounded-xl"
+              className="flex justify-between mt-2 align-center items-center cursor-pointer border-gray-500 border-solid border-[1px] w-fit px-2 rounded-xl"
               onClick={handleCities}
             >
               <h1 className="p-1 h-fit truncate">
@@ -80,7 +64,7 @@ const Footer = ({ footerCities }) => {
       <div
         className={
           cityOpen
-            ? "flex flex-col items-center justify-center pt-6 pb-10 text-[#ffffff99] bg-[#110705] w-full h-fit border-t-[#ffffff70] border-solid border-t-[1px]"
+            ? "flex flex-col items-center justify-center pt-6 pb-10 text-gray-300 bg-gray-800 w-full h-fit border-t-gray-500 border-solid border-t-[1px]"
             : "hidden"
         }
       >
@@ -95,30 +79,41 @@ const Footer = ({ footerCities }) => {
           ))}
         </div>
       </div>
-      <div className="flex flex-col w-full items-center justify-center bg-[#110705] text-white ">
+      <div className="flex flex-col w-full items-center justify-center bg-gray-800 text-white ">
         <p className="py-2">
-          Made with 💓 by Divu, Let's connect beyond the Plate
+          Made with 💓 by Daksh, Let's connect beyond the Plate
         </p>
         <div className="flex justify-between items-center gap-8 py-4">
-          <a>
+          <a
+            href="https://linkedin.com/in/daksh"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <FontAwesomeIcon
               className="text-3xl hover:text-[#0a66c2]"
               icon={faLinkedin}
             />
           </a>
-          <a className="text-3xl hover:text-[#333]">
+          <a
+            href="https://github.com/daksh"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-3xl hover:text-[#333]"
+          >
             <FontAwesomeIcon icon={faGithub} />
           </a>
-          <a className="text-3xl hover:text-[#7289da]">
+          <a
+            href="https://discord.com/users/daksh"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-3xl hover:text-[#7289da]"
+          >
             <FontAwesomeIcon icon={faDiscord} />
-          </a>
-          <a className="text-3xl hover:text-[#d33592]">
-            <FontAwesomeIcon icon={faInstagram} />
           </a>
         </div>
         <div className="flex justify-center items-center py-2 mb-12 gap-2">
           <FaRegCopyright />
-          <p>2023 CHEF-2-DOOR</p>
+          <p>2025 Foodie</p>
         </div>
       </div>
     </>

@@ -1,4 +1,4 @@
-import React, { Suspense, lazy } from "react";
+import React from "react";
 import { Outlet, createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Provider } from "react-redux";
 import Header from "./components/Header";
@@ -10,7 +10,8 @@ import SignIn from "./components/SignIn";
 import Cart from "./components/Cart";
 import RestaurantMenu from "./components/RestaurantMenu";
 import MenuSearch from "./components/MenuSearch";
-const Help = lazy(() => import("./components/Help"));
+import ProtectedRoute from "./components/ProtectedRoute";
+import About from "./components/About";
 const AppLayout = () => {
   return (
     <Provider store={store}>
@@ -22,45 +23,68 @@ const AppLayout = () => {
 
 const appRouter = createBrowserRouter([
   {
+    path: "/signin",
+    element: <SignIn />,
+  },
+  {
     path: "/",
     element: <AppLayout />,
     children: [
       {
         path: "/",
-        element: <Home />,
+        element: (
+          <ProtectedRoute>
+            <Home />
+          </ProtectedRoute>
+        ),
       },
       {
-        path: "contact", // Use relative path for nested routes
-        element: <Contact />,
+        path: "contact",
+        element: (
+          <ProtectedRoute>
+            <Contact />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "search",
-        element: <Search />,
-      },
-      {
-        path: "help",
         element: (
-          <Suspense>
-            <Help />
-          </Suspense>
+          <ProtectedRoute>
+            <Search />
+          </ProtectedRoute>
         ),
       },
-
       {
-        path: "profile",
-        element: <SignIn />,
+        path: "about",
+        element: (
+          <ProtectedRoute>
+            <About />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "cart",
-        element: <Cart />,
+        element: (
+          <ProtectedRoute>
+            <Cart />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "restaurant/:id",
-        element: <RestaurantMenu />,
+        element: (
+          <ProtectedRoute>
+            <RestaurantMenu />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "menusearch/:id",
-        element: <MenuSearch />,
+        element: (
+          <ProtectedRoute>
+            <MenuSearch />
+          </ProtectedRoute>
+        ),
       },
     ],
   },

@@ -3,6 +3,7 @@ import locationSlice from "./locationSlice";
 import cartSlice from "./cartSlice";
 import restaurantListSlice from "./restaurantListSlice";
 import locationSearchVisibility from "./locationSearchVisibilitySlice";
+import authSlice from "./authSlice";
 
 const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ const store = configureStore({
     cart: cartSlice,
     restaurantList: restaurantListSlice,
     locSearch: locationSearchVisibility,
+    auth: authSlice,
   },
 });
 
