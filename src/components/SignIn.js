@@ -95,149 +95,218 @@ const SignIn = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 mt-16">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <div className="mx-auto h-12 w-auto flex justify-center">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-emerald-50 py-16 px-4 sm:px-6 lg:px-8 mt-16">
+      <div className="max-w-lg w-full space-y-8">
+        <div className="text-center">
+          <div className="mx-auto h-16 w-auto flex justify-center mb-8">
+            <h1 className="text-5xl font-bold bg-gradient-to-r from-emerald-600 via-cyan-600 to-blue-600 bg-clip-text text-transparent">
               Foodie
             </h1>
           </div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            {isSignUp ? "Create your account" : "Sign in to your account"}
+          <h2 className="text-4xl font-bold text-slate-800 mb-3">
+            {isSignUp ? "Join Our Community" : "Welcome Back"}
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            {isSignUp ? "Join Foodie today" : "Welcome back to Foodie"}
+          <p className="text-lg text-slate-600 mb-6">
+            {isSignUp
+              ? "Create your account and start your culinary journey"
+              : "Sign in to continue your food adventure"}
           </p>
           {error && (
-            <p className="mt-2 text-center text-sm text-red-600">{error}</p>
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
+              {error}
+            </div>
           )}
         </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="rounded-md shadow-sm -space-y-px">
-            {isSignUp && (
-              <>
-                <div>
-                  <input
-                    id="name"
-                    name="name"
-                    type="text"
-                    required
-                    className="relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                    placeholder="Full name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                  />
-                </div>
-                <div>
-                  <input
-                    id="phone"
-                    name="phone"
-                    type="tel"
-                    required
-                    className="relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                    placeholder="Phone number"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                  />
-                </div>
-                <div>
-                  <input
-                    id="address"
-                    name="address"
-                    type="text"
-                    required
-                    className="relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                    placeholder="Full address"
-                    value={address}
-                    onChange={(e) => setAddress(e.target.value)}
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-0">
-                  <input
-                    id="city"
-                    name="city"
-                    type="text"
-                    required
-                    className="relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                    placeholder="City"
-                    value={city}
-                    onChange={(e) => setCity(e.target.value)}
-                  />
-                  <input
-                    id="state"
-                    name="state"
-                    type="text"
-                    required
-                    className="relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                    placeholder="State"
-                    value={state}
-                    onChange={(e) => setState(e.target.value)}
-                  />
-                </div>
-                <div>
-                  <input
-                    id="pincode"
-                    name="pincode"
-                    type="text"
-                    required
-                    className="relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                    placeholder="Pincode"
-                    value={pincode}
-                    onChange={(e) => setPincode(e.target.value)}
-                  />
-                </div>
-              </>
-            )}
-            <div>
-              <input
-                id="email-address"
-                name="email"
-                type="email"
-                required
-                className={`relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 ${
-                  isSignUp ? "" : "rounded-t-md"
-                } focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm`}
-                placeholder="Email address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                required
-                className="relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-          </div>
 
-          <div>
-            <button
-              type="submit"
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300"
-            >
-              {isSignUp ? "Sign up" : "Sign in"}
-            </button>
-          </div>
+        <div className="bg-white/80 backdrop-blur-sm p-8 rounded-3xl shadow-2xl border border-slate-200">
+          <form className="space-y-6" onSubmit={handleSubmit}>
+            <div className="space-y-4">
+              {isSignUp && (
+                <>
+                  <div>
+                    <label
+                      htmlFor="name"
+                      className="block text-sm font-semibold text-slate-700 mb-2"
+                    >
+                      Full Name
+                    </label>
+                    <input
+                      id="name"
+                      name="name"
+                      type="text"
+                      required
+                      className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-300 bg-white/70"
+                      placeholder="Enter your full name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                    />
+                  </div>
 
-          <div className="text-center">
-            <button
-              type="button"
-              className="font-medium text-blue-600 hover:text-blue-500"
-              onClick={() => setIsSignUp(!isSignUp)}
-            >
-              {isSignUp
-                ? "Already have an account? Sign in"
-                : "Don't have an account? Sign up"}
-            </button>
-          </div>
-        </form>
+                  <div>
+                    <label
+                      htmlFor="phone"
+                      className="block text-sm font-semibold text-slate-700 mb-2"
+                    >
+                      Phone Number
+                    </label>
+                    <input
+                      id="phone"
+                      name="phone"
+                      type="tel"
+                      required
+                      className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-300 bg-white/70"
+                      placeholder="Enter your phone number"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                    />
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="address"
+                      className="block text-sm font-semibold text-slate-700 mb-2"
+                    >
+                      Street Address
+                    </label>
+                    <input
+                      id="address"
+                      name="address"
+                      type="text"
+                      required
+                      className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-300 bg-white/70"
+                      placeholder="Enter your street address"
+                      value={address}
+                      onChange={(e) => setAddress(e.target.value)}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label
+                        htmlFor="city"
+                        className="block text-sm font-semibold text-slate-700 mb-2"
+                      >
+                        City
+                      </label>
+                      <input
+                        id="city"
+                        name="city"
+                        type="text"
+                        required
+                        className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-300 bg-white/70"
+                        placeholder="City"
+                        value={city}
+                        onChange={(e) => setCity(e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <label
+                        htmlFor="state"
+                        className="block text-sm font-semibold text-slate-700 mb-2"
+                      >
+                        State
+                      </label>
+                      <input
+                        id="state"
+                        name="state"
+                        type="text"
+                        required
+                        className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-300 bg-white/70"
+                        placeholder="State"
+                        value={state}
+                        onChange={(e) => setState(e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="pincode"
+                      className="block text-sm font-semibold text-slate-700 mb-2"
+                    >
+                      Pincode
+                    </label>
+                    <input
+                      id="pincode"
+                      name="pincode"
+                      type="text"
+                      required
+                      className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-300 bg-white/70"
+                      placeholder="Enter pincode"
+                      value={pincode}
+                      onChange={(e) => setPincode(e.target.value)}
+                    />
+                  </div>
+                </>
+              )}
+
+              <div>
+                <label
+                  htmlFor="email-address"
+                  className="block text-sm font-semibold text-slate-700 mb-2"
+                >
+                  Email Address
+                </label>
+                <input
+                  id="email-address"
+                  name="email"
+                  type="email"
+                  required
+                  className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-300 bg-white/70"
+                  placeholder="Enter your email address"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-semibold text-slate-700 mb-2"
+                >
+                  Password
+                </label>
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  required
+                  className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-300 bg-white/70"
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="pt-4">
+              <button
+                type="submit"
+                className="w-full flex justify-center py-4 px-6 border border-transparent text-lg font-semibold rounded-xl text-white bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 focus:outline-none focus:ring-4 focus:ring-emerald-500/20 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-0.5"
+              >
+                {isSignUp ? "Create Account" : "Sign In"}
+              </button>
+            </div>
+
+            <div className="text-center pt-4">
+              <button
+                type="button"
+                className="text-lg font-semibold text-emerald-600 hover:text-emerald-700 transition-colors duration-300"
+                onClick={() => setIsSignUp(!isSignUp)}
+              >
+                {isSignUp
+                  ? "Already have an account? Sign in here"
+                  : "Don't have an account? Join us today"}
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <div className="text-center">
+          <p className="text-sm text-slate-500">
+            By continuing, you agree to our Terms of Service and Privacy Policy
+          </p>
+        </div>
       </div>
     </div>
   );

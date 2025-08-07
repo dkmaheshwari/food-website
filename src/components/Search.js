@@ -27,7 +27,7 @@ const Search = () => {
     expResNearMe,
     notServicable,
   ] = useRestaurantsData();
-  // const [popularCuisines] = usePopularCuisinesData();
+  const [popularCuisines] = usePopularCuisinesData();
   const [searchText, setSearchText] = useState("");
   const [ErrorMessage, setErrorMessage] = useState("");
   const [filteredSearchResList, setFilteredSearchResList] = useState([]);

@@ -13,13 +13,15 @@ import MenuSearch from "./components/MenuSearch";
 import ProtectedRoute from "./components/ProtectedRoute";
 import About from "./components/About";
 import Error from "./components/Error";
+import Chatbot from "./components/Chatbot";
 
 const AppLayout = () => {
   return (
-    <Provider store={store}>
+    <>
       <Header />
       <Outlet />
-    </Provider>
+      <Chatbot />
+    </>
   );
 };
 

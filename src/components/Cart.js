@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import emptyCart from "../assets/emptyCart.webp";
 import { Link } from "react-router-dom";
 import { addItems, removeItems, clearCart } from "../Utils/cartSlice";
-import { current } from "@reduxjs/toolkit";
 import Success from "./Success";
 import { RES_CARD_IMG_CDN_URL } from "../helpers/Constant";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -13,16 +12,14 @@ const Cart = () => {
   const dispatch = useDispatch();
   const cartDetails = useSelector((store) => store.cart.cartItems);
   const locDetails = useSelector((store) => store.location.locationDetails);
-  const time = cartDetails[0]?.resDetailsData?.slaString;
-  const deliveryFee = (
-    cartDetails[0]?.resDetailsData?.deliveryFee / 100
-  ).toFixed(0);
-  const distance = cartDetails[0]?.resDetailsData?.lastMileTravelString;
+  const time = cartDetails[0]?.resDetailsData?.sla?.slaString;
+  const deliveryFee =
+    cartDetails[0]?.resDetailsData?.feeDetails?.totalFee / 100;
+  const distance = cartDetails[0]?.resDetailsData?.sla?.lastMileTravelString;
   const [area, setArea] = useState("");
   const [cityName, setCityName] = useState("");
   const [state, setState] = useState("");
   const [suggestionText, setSuggestionText] = useState("");
-  const [isChecked, setIsChecked] = useState("");
   const [confirmAddress, setConfirmAddress] = useState(false);
   const [confirmPayment, setConfirmPayment] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
@@ -61,7 +58,7 @@ const Cart = () => {
       }, 2500);
       return () => clearTimeout(timeoutId);
     }
-  }, [orderSuccess]);
+  }, [orderSuccess, handleClearCart]);
   const itemTotal = cartDetails.reduce((accumulator, currentItem) => {
     const itemPrice =
       ((currentItem.price || currentItem.defaultPrice) / 100) *
@@ -71,7 +68,7 @@ const Cart = () => {
   // console.log(distance);
   return cartDetails.length === 0 ? (
     <div className="pt-40 flex flex-col items-center justify-center">
-      <img src={emptyCart} className="w-[24rem]" />
+      <img src={emptyCart} className="w-[24rem]" alt="Empty Cart" />
       <h1 className="text-2xl text-[#535665] font-bold pt-5 tracking-tighter">
         Your cart is empty
       </h1>
@@ -248,6 +245,7 @@ const Cart = () => {
             >
               <img
                 className="w-14 h-14 mr-3 object-cover"
+                alt="Restaurant"
                 src={
                   RES_CARD_IMG_CDN_URL +
                   cartDetails[0].resDetailsData?.cloudinaryImageId
@@ -360,7 +358,7 @@ const Cart = () => {
                   <h3 className="text-nowrap">
                     ₹
                     {Number(deliveryFee) ||
-                      (Number(distance.split(" ")[0]) * 6.8).toFixed(2)}
+                      (Number(distance?.split(" ")[0]) * 6.8).toFixed(2)}
                   </h3>
                 </div>
                 <div className="flex justify-between text-[#686b78] text-xs font-semibold pb-4">
@@ -384,7 +382,7 @@ const Cart = () => {
                   Number(itemTotal) +
                   Number(
                     Number(deliveryFee) ||
-                      (Number(distance.split(" ")[0]) * 6.8).toFixed(2)
+                      (Number(distance?.split(" ")[0]) * 6.8).toFixed(2)
                   ) +
                   3 +
                   Number(0.18 * itemTotal)

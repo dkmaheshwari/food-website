@@ -73,34 +73,35 @@ const Home = () => {
     <HomeShimmer />
   ) : (
     <>
-      <div className="body xl:max-w-[80%] mx-auto min-h-screen pt-40">
-        <div className="mx-8">
+      <div className="body xl:max-w-[90%] mx-auto min-h-screen pt-32 bg-gradient-to-br from-slate-50 via-white to-slate-50">
+        <div className="mx-6 lg:mx-12">
           {/* Hero Section */}
-          <div className="text-center mb-12">
-            <h1 className="font-bold text-4xl mb-4 bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
-              Discover Delicious Food
+          <div className="text-center mb-16">
+            <h1 className="font-bold text-5xl lg:text-6xl mb-6 bg-gradient-to-r from-emerald-600 via-cyan-600 to-blue-600 bg-clip-text text-transparent">
+              Discover Culinary Excellence
             </h1>
-            <p className="text-gray-600 text-lg mb-8">
-              Order from the best restaurants in {city}
+            <p className="text-slate-600 text-xl mb-10 max-w-2xl mx-auto leading-relaxed">
+              Experience the finest dining from premium restaurants in{" "}
+              <span className="font-semibold text-emerald-600">{city}</span>
             </p>
 
             {/* Search Bar */}
-            <div className="flex justify-center mb-6">
-              <div className="relative w-full max-w-2xl">
+            <div className="flex justify-center mb-8">
+              <div className="relative w-full max-w-3xl">
                 <input
                   type="text"
-                  className="w-full border border-gray-300 p-4 pl-12 rounded-full shadow-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                  placeholder="Search for restaurants, cuisines..."
+                  className="w-full border-2 border-slate-200 bg-white/80 backdrop-blur-sm p-5 pl-14 rounded-2xl shadow-xl focus:outline-none focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-300"
+                  placeholder="Search premium restaurants, cuisines, or dishes..."
                   value={searchText}
                   onChange={(e) => setSearchText(e.target.value)}
                   onKeyPress={(e) => e.key === "Enter" && handleSearch()}
                 />
                 <FontAwesomeIcon
                   icon={faSearch}
-                  className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"
+                  className="absolute left-5 top-1/2 transform -translate-y-1/2 text-slate-400 text-lg"
                 />
                 <button
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-orange-500 text-white px-6 py-2 rounded-full hover:bg-orange-600 transition-colors"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-emerald-500 to-cyan-500 text-white px-8 py-3 rounded-xl hover:from-emerald-600 hover:to-cyan-600 transition-all duration-300 shadow-lg hover:shadow-xl font-semibold"
                   onClick={handleSearch}
                 >
                   Search
@@ -109,55 +110,64 @@ const Home = () => {
             </div>
 
             {/* Filter Buttons */}
-            <div className="flex justify-center gap-4 mb-8">
+            <div className="flex justify-center gap-4 mb-12 flex-wrap">
               <button
                 onClick={() => handleFilter("")}
-                className={`px-6 py-2 rounded-full transition-all ${
+                className={`px-8 py-3 rounded-xl transition-all duration-300 font-semibold shadow-lg ${
                   filterType === ""
-                    ? "bg-orange-500 text-white"
-                    : "border border-gray-300 text-gray-700 hover:bg-gray-50"
+                    ? "bg-gradient-to-r from-emerald-500 to-cyan-500 text-white shadow-emerald-500/25"
+                    : "border-2 border-slate-200 bg-white/80 backdrop-blur-sm text-slate-700 hover:bg-slate-50 hover:border-slate-300"
                 }`}
               >
                 <FontAwesomeIcon icon={faFilter} className="mr-2" />
-                All
+                All Restaurants
               </button>
               <button
                 onClick={() => handleFilter("rating")}
-                className={`px-6 py-2 rounded-full transition-all ${
+                className={`px-8 py-3 rounded-xl transition-all duration-300 font-semibold shadow-lg ${
                   filterType === "rating"
-                    ? "bg-orange-500 text-white"
-                    : "border border-gray-300 text-gray-700 hover:bg-gray-50"
+                    ? "bg-gradient-to-r from-emerald-500 to-cyan-500 text-white shadow-emerald-500/25"
+                    : "border-2 border-slate-200 bg-white/80 backdrop-blur-sm text-slate-700 hover:bg-slate-50 hover:border-slate-300"
                 }`}
               >
-                Top Rated
+                ⭐ Top Rated
               </button>
               <button
                 onClick={() => handleFilter("name")}
-                className={`px-6 py-2 rounded-full transition-all ${
+                className={`px-8 py-3 rounded-xl transition-all duration-300 font-semibold shadow-lg ${
                   filterType === "name"
-                    ? "bg-orange-500 text-white"
-                    : "border border-gray-300 text-gray-700 hover:bg-gray-50"
+                    ? "bg-gradient-to-r from-emerald-500 to-cyan-500 text-white shadow-emerald-500/25"
+                    : "border-2 border-slate-200 bg-white/80 backdrop-blur-sm text-slate-700 hover:bg-slate-50 hover:border-slate-300"
                 }`}
               >
-                A-Z
+                🔤 A-Z
               </button>
               {(searchText || filterType) && (
                 <button
                   onClick={handleReset}
-                  className="px-6 py-2 rounded-full bg-gray-500 text-white hover:bg-gray-600 transition-all"
+                  className="px-8 py-3 rounded-xl bg-gradient-to-r from-slate-500 to-slate-600 text-white hover:from-slate-600 hover:to-slate-700 transition-all duration-300 shadow-lg font-semibold"
                 >
-                  Reset
+                  Reset Filters
                 </button>
               )}
             </div>
           </div>
 
-          {/* Restaurant Grid */}
-          <div className="mb-12">
-            <h2 className="font-bold text-2xl mb-6 text-center">
-              {filteredResList.length} restaurants found
-            </h2>
-            <div className="grid place-items-center gap-8 mx-auto px-4 xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1">
+          {/* Restaurant Grid Section */}
+          <div className="mb-16">
+            <div className="text-center mb-12">
+              <h2 className="font-bold text-3xl mb-4 text-slate-800">
+                Featured Restaurants
+              </h2>
+              <p className="text-slate-600 text-lg">
+                <span className="font-semibold text-emerald-600">
+                  {filteredResList.length}
+                </span>{" "}
+                premium dining options available
+              </p>
+            </div>
+
+            <div className="grid gap-8 mx-auto xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 place-items-center">
               {filteredResList.map((res) => (
                 <RestaurantCard
                   name={res.name}
