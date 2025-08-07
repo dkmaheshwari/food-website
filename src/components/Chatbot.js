@@ -6,7 +6,7 @@ const Chatbot = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
     {
-      text: "Welcome! How can I help you find a great restaurant today?",
+      text: "🍽️ Welcome to Foodie! I can help you discover restaurants and their menu items. Try asking:\n\n• 'Show me Italian restaurants'\n• 'What food items does Pizza Palace have?'\n• 'List vegetarian options'\n• 'What's available in Chinese cuisine?'",
       sender: "bot",
     },
   ]);
@@ -61,36 +61,60 @@ const Chatbot = () => {
       // Get the generative model
       const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-      // Create restaurant data context for the AI
+      // Create restaurant data context for the AI with detailed menu information
       const restaurantContext =
         restaurants.length > 0
           ? `Available restaurants in our system:\n${restaurants
-              .map(
-                (r) =>
-                  `- ${r.name}: ${r.cuisine.join(", ")} cuisine, Rating: ${
-                    r.rating
-                  }/5${r.menu ? `, Menu items: ${r.menu.length} items` : ""}`
-              )
+              .map((r) => {
+                let restaurantInfo = `\n🍽️ **${r.name}**\n- Cuisine: ${r.cuisine.join(", ")}\n- Rating: ${r.rating}/5 ⭐`;
+                
+                if (r.menu && r.menu.length > 0) {
+                  restaurantInfo += `\n- Popular Menu Items:`;
+                  r.menu.slice(0, 5).forEach(item => {
+                    const vegIcon = item.isVeg ? "🌱" : "🍖";
+                    restaurantInfo += `\n  • ${item.name} ${vegIcon} - ₹${item.price} ${item.description ? `(${item.description})` : ''}`;
+                  });
+                  if (r.menu.length > 5) {
+                    restaurantInfo += `\n  • ...and ${r.menu.length - 5} more items`;
+                  }
+                }
+                return restaurantInfo;
+              })
               .join("\n")}\n\n`
           : "Currently no restaurant data is available.\n\n";
 
       // Enhanced prompt with actual restaurant data
-      const prompt = `You are a helpful restaurant recommendation chatbot for Foodie, a food delivery platform serving Ghaziabad and surrounding areas. You have access to our current restaurant database.
+      const prompt = `You are a helpful restaurant recommendation chatbot for Foodie, a food delivery platform serving Ghaziabad and surrounding areas. You have access to our current restaurant database with detailed menu information.
 
 ${restaurantContext}
 
 User's message: "${currentInput}"
 
-Instructions:
-1. If the user asks for restaurant recommendations, use ONLY the restaurants from our database above
-2. When recommending restaurants, mention specific names, cuisines, and ratings from our data
-3. If asking about a specific cuisine, filter restaurants by that cuisine type
-4. If asking about Ghaziabad specifically, mention that these are the restaurants we serve in the area
-5. If no restaurants match their criteria, suggest alternatives from our available options
-6. Keep responses helpful, friendly, and focused on our actual restaurant offerings
-7. If the user asks about something unrelated to food/restaurants, politely redirect them to food-related topics
+IMPORTANT FORMATTING INSTRUCTIONS:
+1. When listing restaurants or food items, ALWAYS use bullet points (•) or numbered lists
+2. When showing menu items, include:
+   - Item name with veg/non-veg emoji (🌱 for veg, 🍖 for non-veg)
+   - Price in rupees (₹)
+   - Brief description if available
+3. Use emojis to make responses more engaging (🍽️, ⭐, 🌱, 🍖, 🍕, 🍔, etc.)
+4. Format example:
+   **Restaurant Name** ⭐ 4.5/5
+   Popular items:
+   • Margherita Pizza 🌱 - ₹299 (Classic cheese and tomato)
+   • Chicken Biryani 🍖 - ₹399 (Aromatic basmati rice with spices)
 
-Please provide a helpful response:`;
+RESPONSE GUIDELINES:
+1. If user asks for restaurant recommendations, use ONLY restaurants from our database
+2. When recommending restaurants, mention specific names, cuisines, and ratings
+3. When asked about specific cuisines, filter and show relevant restaurants with their menu items
+4. When asked about food items or menu, list items in bullet points with emojis and prices
+5. If asking about Ghaziabad specifically, mention these are restaurants we serve in the area
+6. If no restaurants match criteria, suggest alternatives from available options
+7. Keep responses helpful, friendly, and food-focused
+8. If asked about unrelated topics, politely redirect to food/restaurant topics
+9. Always format lists and menu items clearly with bullet points
+
+Please provide a well-formatted, helpful response with proper bullet points and emojis:`;
 
       // Generate content
       const result = await model.generateContent(prompt);
@@ -144,7 +168,7 @@ Please provide a helpful response:`;
           {/* Header */}
           <div className="bg-orange-500 text-white p-4 rounded-t-lg flex justify-between items-center">
             <h3 className="font-bold text-lg">
-              Find the best restaurants in town
+              🤖 Food Assistant - Menu Explorer
             </h3>
             <button onClick={toggleChat} aria-label="Close chatbot">
               <IoClose size={24} />
@@ -164,11 +188,15 @@ Please provide a helpful response:`;
                 }`}
               >
                 <div
-                  className={`max-w-xs lg:max-w-md px-4 py-2 rounded-2xl ${
+                  className={`max-w-xs lg:max-w-md px-4 py-2 rounded-2xl whitespace-pre-line ${
                     msg.sender === "user"
                       ? "bg-orange-500 text-white"
                       : "bg-gray-200 text-gray-800"
                   }`}
+                  style={{ 
+                    lineHeight: msg.sender === "bot" ? "1.6" : "1.4",
+                    fontSize: msg.sender === "bot" ? "14px" : "14px"
+                  }}
                 >
                   {msg.text}
                 </div>
